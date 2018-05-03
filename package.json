@@ -26,11 +26,12 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alinz/react-native-webview-bridge/issues"
+    "url": "https://github.com/406345/react-native-webview-bridge/issues"
   },
-  "homepage": "https://github.com/alinz/react-native-webview-bridge",
+  "homepage": "https://github.com/406345/react-native-webview-bridge",
   "dependencies": {
     "invariant": "2.2.0",
-    "keymirror": "0.1.1"
+    "keymirror": "0.1.1",
+    "prop-types": "^15.6.1",
   }
 }
