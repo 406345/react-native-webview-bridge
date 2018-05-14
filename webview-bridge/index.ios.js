@@ -107,10 +107,9 @@ export default class WebViewBridge extends Component {
   
     //   hideKeyboardAccessoryView: PropTypes.bool,
     // }
-    this.props = {...PropTypes.props};
+    // this.props = {...PropTypes.props};
     this.onBridgeMessage = PropTypes.func;
     this.hideKeyboardAccessoryView = PropTypes.bool;
-    this.onloadError = this.props.onLoadError;
     
     this.state =  {
       viewState: WebViewBridgeState.IDLE,
@@ -126,87 +125,6 @@ export default class WebViewBridge extends Component {
     }
   }
  
-  render() {
-    var otherView = null;
-
-    if (this.state.viewState === WebViewBridgeState.LOADING) {
-      otherView = (this.props.renderLoading || defaultRenderLoading)();
-    } else if (this.state.viewState === WebViewBridgeState.ERROR) {
-      var errorEvent = this.state.lastErrorEvent;
-      invariant(
-        errorEvent != null,
-        'lastErrorEvent expected to be non-null'
-      );
-      otherView = (this.props.renderError || defaultRenderError)(
-        errorEvent.domain,
-        errorEvent.code,
-        errorEvent.description
-      );
-    } else if (this.state.viewState !== WebViewBridgeState.IDLE) {
-      console.error(
-        'RCTWebViewBridge invalid state encountered: ' + this.state.loading
-      );
-    }
-
-    var webViewStyles = [styles.container, styles.webView, this.props.style];
-    if (this.state.viewState === WebViewBridgeState.LOADING ||
-      this.state.viewState === WebViewBridgeState.ERROR) {
-      // if we're in either LOADING or ERROR states, don't show the webView
-      webViewStyles.push(styles.hidden);
-    }
-
-    var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event) => {
-      var shouldStart = this.props.onShouldStartLoadWithRequest &&
-        this.props.onShouldStartLoadWithRequest(event.nativeEvent);
-      RCTWebViewBridgeManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
-    });
-
-    var {javaScriptEnabled, domStorageEnabled} = this.props;
-    if (this.props.javaScriptEnabledAndroid) {
-      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
-      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
-    }
-    if (this.props.domStorageEnabledAndroid) {
-      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
-      domStorageEnabled = this.props.domStorageEnabledAndroid;
-    }
-
-    var onBridgeMessage = (event) => {
-      const onBridgeMessageCallback = this.props.onBridgeMessage;
-      if (onBridgeMessageCallback) {
-        const messages = event.nativeEvent.messages;
-        messages.forEach((message) => {
-          onBridgeMessageCallback(message);
-        });
-      }
-    };
-
-    let {source, ...props} = {...this.props};
-    delete props.onBridgeMessage;
-    delete props.onShouldStartLoadWithRequest;
-
-    var webView =
-      <RCTWebViewBridge
-        ref={RCT_WEBVIEWBRIDGE_REF}
-        key="webViewKey"
-        {...this.props}
-        source={resolveAssetSource(source)}
-        style={webViewStyles}
-        onLoadingStart={this.onLoadingStart.bind(this)}
-        onLoadingFinish={this.onLoadingFinish.bind(this)}
-        onLoadingError={this.onLoadingError.bind(this)}
-        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-        onBridgeMessage={onBridgeMessage}
-      />;
-
-    return (
-      <View style={styles.container}>
-        {webView}
-        {otherView}
-      </View>
-    );
-  }
-
   goForward() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewBridgeHandle(),
@@ -277,6 +195,88 @@ export default class WebViewBridge extends Component {
       viewState: WebViewBridgeState.IDLE,
     });
     this.updateNavigationState(event);
+  }
+
+  render() {
+ 
+    var otherView = null;
+
+    if (this.state.viewState === WebViewBridgeState.LOADING) {
+      otherView = (this.props.renderLoading || defaultRenderLoading)();
+    } else if (this.state.viewState === WebViewBridgeState.ERROR) {
+      var errorEvent = this.state.lastErrorEvent;
+      invariant(
+        errorEvent != null,
+        'lastErrorEvent expected to be non-null'
+      );
+      otherView = (this.props.renderError || defaultRenderError)(
+        errorEvent.domain,
+        errorEvent.code,
+        errorEvent.description
+      );
+    } else if (this.state.viewState !== WebViewBridgeState.IDLE) {
+      console.error(
+        'RCTWebViewBridge invalid state encountered: ' + this.state.loading
+      );
+    }
+
+    var webViewStyles = [styles.container, styles.webView, this.props.style];
+    if (this.state.viewState === WebViewBridgeState.LOADING ||
+      this.state.viewState === WebViewBridgeState.ERROR) {
+      // if we're in either LOADING or ERROR states, don't show the webView
+      webViewStyles.push(styles.hidden);
+    }
+
+    var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event) => {
+      var shouldStart = this.props.onShouldStartLoadWithRequest &&
+        this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+      RCTWebViewBridgeManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
+    });
+
+    var {javaScriptEnabled, domStorageEnabled} = this.props;
+    if (this.props.javaScriptEnabledAndroid) {
+      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
+      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
+    }
+    if (this.props.domStorageEnabledAndroid) {
+      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
+      domStorageEnabled = this.props.domStorageEnabledAndroid;
+    }
+
+    var onBridgeMessage = (event) => {
+      const onBridgeMessageCallback = this.props.onBridgeMessage;
+      if (onBridgeMessageCallback) {
+        const messages = event.nativeEvent.messages;
+        messages.forEach((message) => {
+          onBridgeMessageCallback(message);
+        });
+      }
+    };
+
+    let {source, ...props} = {...this.props};
+    // delete props.onBridgeMessage;
+    // delete props.onShouldStartLoadWithRequest;
+
+    var webView =
+      <RCTWebViewBridge
+        ref={RCT_WEBVIEWBRIDGE_REF}
+        key="webViewKey"
+        {...this.props}
+        source={resolveAssetSource(source)}
+        style={webViewStyles}
+        onLoadingStart={this.onLoadingStart.bind(this)}
+        onLoadingFinish={this.onLoadingFinish.bind(this)}
+        onLoadingError={this.onLoadingError.bind(this)}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        onBridgeMessage={onBridgeMessage}
+      />;
+
+    return (
+      <View style={styles.container}>
+        {webView}
+        {otherView}
+      </View>
+    );
   }
 }
 
