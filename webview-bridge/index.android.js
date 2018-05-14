@@ -10,8 +10,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebViewBridge
- *
- * Modify by DSCoder for adjust ECS6
  */
 'use strict';
 
